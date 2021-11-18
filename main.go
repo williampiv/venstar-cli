@@ -19,5 +19,5 @@ func main() {
 		setThermostatMode(*ip, convertThermostatMode(*setMode))
 	}
 	thermostatData := getThermostatInfo(*ip)
-	fmt.Println("Current Thermostat Mode: ", thermostatData.State)
+	printThermostatInfo(thermostatData)
 }
