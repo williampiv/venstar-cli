@@ -13,6 +13,9 @@ vet: fmt
 	go vet ./...
 .PHONY:vet
 
+check: vet lint
+.PHONY:check
+
 build:
 	go build -o build/$(NAME)
 .PHONY: build
