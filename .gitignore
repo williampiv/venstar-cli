@@ -1,0 +1,5 @@
+# Mac Stuff
+.DS_Store
+
+#Exclude Built Binaries
+build/*
