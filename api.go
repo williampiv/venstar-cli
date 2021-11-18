@@ -7,9 +7,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 )
 
-type ThermostatInfo struct {
+type thermostatInfo struct {
 	Name            string `json:"name"`
 	Mode            int    `json:"mode"`
 	State           int    `json:"state"`
@@ -35,7 +36,7 @@ type ThermostatInfo struct {
 	AvaliableModes  []int  `json:"avaliablemodes"`
 }
 
-func ConvertThermostatMode(mode string) int {
+func convertThermostatMode(mode string) int {
 	switch mode {
 	case "off":
 		return 0
@@ -50,28 +51,31 @@ func ConvertThermostatMode(mode string) int {
 	}
 }
 
-func GetThermostatInfo(ipaddress string) ThermostatInfo {
+func getThermostatInfo(ipaddress string) thermostatInfo {
 	resp, err := http.Get(fmt.Sprintf("http://%s/query/info", ipaddress))
 	if err != nil {
 		log.Fatalln(err)
 	}
 	defer resp.Body.Close()
-	resp_bytes, _ := ioutil.ReadAll(resp.Body)
-	var thermostat_response ThermostatInfo
-	json.Unmarshal(resp_bytes, &thermostat_response)
-	return thermostat_response
+	respBytes, _ := ioutil.ReadAll(resp.Body)
+	var thermostatResponse thermostatInfo
+	json.Unmarshal(respBytes, &thermostatResponse)
+	return thermostatResponse
 }
 
-func SetThermostatMode(ipaddress string, mode int) bool {
-	data := make(map[string]int, 3)
-	currentInfo := GetThermostatInfo(ipaddress)
-	data["heattemp"] = currentInfo.HeatTemp
-	data["cooltemp"] = currentInfo.CoolTemp
-	data["mode"] = mode
+func setThermostatMode(ipaddress string, mode int) bool {
+	data := url.Values{}
+	currentInfo := getThermostatInfo(ipaddress)
+	data.Set("heattemp", fmt.Sprintf("%d", currentInfo.HeatTemp))
+	data.Set("cooltemp", fmt.Sprintf("%d", currentInfo.CoolTemp))
+	data.Set("mode", fmt.Sprintf("%d", mode))
 	jsonData, err := json.Marshal(data)
+	fmt.Println(bytes.NewBuffer(jsonData))
 	if err != nil {
 		return false
 	}
-	_, reqErr := http.Post(fmt.Sprintf("http://%s/control", ipaddress), "application/json", bytes.NewBuffer(jsonData))
+	resp, reqErr := http.PostForm(fmt.Sprintf("http://%s/control", ipaddress), url.Values(data))
+	res, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(res))
 	return reqErr == nil
 }
