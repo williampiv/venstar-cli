@@ -32,7 +32,7 @@ type thermostatInfo struct {
 	HeatTempMax     int    `json:"heattempmax"`
 	SetPointDelta   int    `json:"setpointdelta"`
 	Humidity        int    `json:"hum"`
-	AvaliableModes  []int  `json:"avaliablemodes"`
+	AvaliableModes  int    `json:"avaliablemodes"`
 }
 
 func convertThermostatMode(mode string) int {
