@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -69,13 +68,6 @@ func setThermostatMode(ipaddress string, mode int) bool {
 	data.Set("heattemp", fmt.Sprintf("%d", currentInfo.HeatTemp))
 	data.Set("cooltemp", fmt.Sprintf("%d", currentInfo.CoolTemp))
 	data.Set("mode", fmt.Sprintf("%d", mode))
-	jsonData, err := json.Marshal(data)
-	fmt.Println(bytes.NewBuffer(jsonData))
-	if err != nil {
-		return false
-	}
-	resp, reqErr := http.PostForm(fmt.Sprintf("http://%s/control", ipaddress), url.Values(data))
-	res, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(res))
+	_, reqErr := http.PostForm(fmt.Sprintf("http://%s/control", ipaddress), url.Values(data))
 	return reqErr == nil
 }
