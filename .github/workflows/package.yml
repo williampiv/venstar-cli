@@ -12,14 +12,16 @@ jobs:
     name: Generate cross-platform builds
     runs-on: ubuntu-latest
     steps:
-      - name: define commit hash
-        run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - name: Declare some variables
+        id: vars
+        shell: bash
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Checkout the repository
         uses: actions/checkout@v2
       - name: Generate build files
         uses: thatisuday/go-cross-build@v1
         with:
-            platforms: 'linux/amd64, darwin/amd64, windows/amd64'
+            platforms: 'linux/amd64, darwin/amd64, darwin/arm64, windows/amd64'
             package: ''
             name: 'venstar-cli'
             compress: 'true'
@@ -30,8 +32,8 @@ jobs:
         with:
           draft: false
           prerelease: false
-          release_name: ${{ env.COMMIT_HASH }}
-          tag_name: ${{ env.COMMIT_HASH }}
+          release_name: ${{ github.sha }}
+          tag_name: ${{ steps.vars.outputs.sha_short }}
           body_path: README.md
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -52,6 +54,15 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build/venstar-cli-darwin-amd64.tar.gz
           asset_name: venstar-cli-darwin-amd64.tar.gz
+          asset_content_type: application/gzip
+      - name: upload darwin arm64 artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/venstar-cli-darwin-arm64.tar.gz
+          asset_name: venstar-cli-darwin-arm64.tar.gz
           asset_content_type: application/gzip
       - name: upload windows artifact
         uses: actions/upload-release-asset@v1
