@@ -12,6 +12,8 @@ jobs:
     name: Generate cross-platform builds
     runs-on: ubuntu-latest
     steps:
+      - name: define commit hash
+        run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       - name: Checkout the repository
         uses: actions/checkout@v2
       - name: Generate build files
@@ -22,3 +24,41 @@ jobs:
             name: 'venstar-cli'
             compress: 'true'
             dest: 'build'
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ env.COMMIT_HASH }}
+          tag_name: ${{ github.ref }}
+          body_path: README.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: upload linux artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/venstar-cli-linux-amd64.tar.gz
+          asset_name: venstar-cli-linux-amd64.tar.gz
+          asset_content_type: application/gzip
+      - name: upload darwin artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/venstar-cli-darwin-amd64.tar.gz
+          asset_name: venstar-cli-darwin-amd64.tar.gz
+          asset_content_type: application/gzip
+      - name: upload windows artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/venstar-cli-windows-amd64.tar.gz
+          asset_name: venstar-cli-windows-amd64.tar.gz
+          asset_content_type: application/gzip
