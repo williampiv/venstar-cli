@@ -12,6 +12,10 @@ jobs:
     name: Generate cross-platform builds
     runs-on: ubuntu-latest
     steps:
+      - name: Declare some variables
+        id: vars
+        shell: bash
+        run: echo "::set-output name=sha_short::$(git rev-parse --short $GITHUB_SHA)"
       - name: Checkout the repository
         uses: actions/checkout@v2
       - name: Generate build files
@@ -29,7 +33,7 @@ jobs:
           draft: false
           prerelease: false
           release_name: ${{ github.sha }}
-          tag_name: ${{ github.sha }}
+          tag_name: ${{ steps.vars.outputs.sha_short }}
           body_path: README.md
         env:
           GITHUB_TOKEN: ${{ github.token }}
