@@ -21,7 +21,7 @@ jobs:
       - name: Generate build files
         uses: williampiv/go-cross-build@master
         with:
-            platforms: 'linux/amd64, darwin/amd64, darwin/arm64, windows/amd64'
+            platforms: 'linux/amd64, linux/arm64, darwin/amd64, darwin/arm64, windows/amd64'
             package: ''
             name: 'venstar-cli'
             compress: 'true'
@@ -37,7 +37,7 @@ jobs:
           body_path: README.md
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: upload linux artifact
+      - name: upload linux amd64 artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -45,6 +45,15 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build/venstar-cli-linux-amd64.tar.gz
           asset_name: venstar-cli-linux-amd64.tar.gz
+          asset_content_type: application/gzip
+      - name: upload linux arm64 artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/venstar-cli-linux-arm64.tar.gz
+          asset_name: venstar-cli-linux-arm64.tar.gz
           asset_content_type: application/gzip
       - name: upload darwin amd64 artifact
         uses: actions/upload-release-asset@v1
