@@ -62,12 +62,19 @@ func getThermostatInfo(ipaddress string) thermostatInfo {
 	return thermostatResponse
 }
 
-func setThermostatMode(ipaddress string, mode int) bool {
+func setThermostatMode(ipaddress string, mode int, currentInfo thermostatInfo) bool {
 	data := url.Values{}
-	currentInfo := getThermostatInfo(ipaddress)
 	data.Set("heattemp", fmt.Sprintf("%d", currentInfo.HeatTemp))
 	data.Set("cooltemp", fmt.Sprintf("%d", currentInfo.CoolTemp))
 	data.Set("mode", fmt.Sprintf("%d", mode))
+	_, reqErr := http.PostForm(fmt.Sprintf("http://%s/control", ipaddress), url.Values(data))
+	return reqErr == nil
+}
+
+func setCoolTemp(ipaddress string, coolTemp int, currentInfo thermostatInfo) bool {
+	data := url.Values{}
+	data.Set("heattemp", fmt.Sprintf("%d", currentInfo.HeatTemp))
+	data.Set("cooltemp", fmt.Sprintf("%d", coolTemp))
 	_, reqErr := http.PostForm(fmt.Sprintf("http://%s/control", ipaddress), url.Values(data))
 	return reqErr == nil
 }
