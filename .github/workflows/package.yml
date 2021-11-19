@@ -19,7 +19,7 @@ jobs:
       - name: Generate build files
         uses: thatisuday/go-cross-build@v1
         with:
-            platforms: 'linux/amd64, darwin/amd64, darwin/arm64, windows/amd64'
+            platforms: 'linux/amd64, darwin/amd64, windows/amd64'
             package: ''
             name: 'venstar-cli'
             compress: 'true'
@@ -52,15 +52,6 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build/venstar-cli-darwin-amd64.tar.gz
           asset_name: venstar-cli-darwin-amd64.tar.gz
-          asset_content_type: application/gzip
-      - name: upload darwin arm64 artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/venstar-cli-darwin-arm64.tar.gz
-          asset_name: venstar-cli-darwin-arm64.tar.gz
           asset_content_type: application/gzip
       - name: upload windows artifact
         uses: actions/upload-release-asset@v1
