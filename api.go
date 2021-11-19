@@ -50,6 +50,17 @@ func convertThermostatMode(mode string) int {
 	}
 }
 
+func convertFanMode(mode string) int {
+	switch mode {
+	case "auto":
+		return 0
+	case "on":
+		return 1
+	default:
+		return 0
+	}
+}
+
 func getThermostatInfo(ipaddress string) thermostatInfo {
 	resp, err := http.Get(fmt.Sprintf("http://%s/query/info", ipaddress))
 	if err != nil {
@@ -75,6 +86,15 @@ func setCoolTemp(ipaddress string, coolTemp int, currentInfo thermostatInfo) boo
 	data := url.Values{}
 	data.Set("heattemp", fmt.Sprintf("%d", currentInfo.HeatTemp))
 	data.Set("cooltemp", fmt.Sprintf("%d", coolTemp))
+	_, reqErr := http.PostForm(fmt.Sprintf("http://%s/control", ipaddress), url.Values(data))
+	return reqErr == nil
+}
+
+func setFanMode(ipaddress string, fanMode int, currentInfo thermostatInfo) bool {
+	data := url.Values{}
+	data.Set("heattemp", fmt.Sprintf("%d", currentInfo.HeatTemp))
+	data.Set("cooltemp", fmt.Sprintf("%d", currentInfo.CoolTemp))
+	data.Set("fan", fmt.Sprintf("%d", fanMode))
 	_, reqErr := http.PostForm(fmt.Sprintf("http://%s/control", ipaddress), url.Values(data))
 	return reqErr == nil
 }
