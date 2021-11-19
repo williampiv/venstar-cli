@@ -12,12 +12,12 @@ jobs:
     name: Generate cross-platform builds
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
       - name: Declare some variables
         id: vars
         shell: bash
         run: echo "::set-output name=sha_short::$(git rev-parse --short $GITHUB_SHA)"
-      - name: Checkout the repository
-        uses: actions/checkout@v2
       - name: Generate build files
         uses: williampiv/go-cross-build@master
         with:
