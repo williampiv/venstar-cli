@@ -3,3 +3,4 @@
 
 #Exclude Built Binaries
 build/*
+.idea/
